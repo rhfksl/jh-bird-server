@@ -1,14 +1,15 @@
 {
   "development": {
     "username": "root",
-    "database": "database_development",
+    "database": "jh_bird_dev",
     "host": "127.0.0.1",
     "dialect": "mysql",
+    "password": "root",
     "operatorsAliases": false
   },
   "production": {
     "username": "root",
-    "database": "database_production",
+    "database": "jh_bird",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "operatorsAliases": false
