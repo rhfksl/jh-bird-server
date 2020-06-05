@@ -8,7 +8,18 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
-// console.log('againe', process.env.PASSWORD);
+// 모델 확인
+// const models = require('./models/index.js');
+
+// models.sequelize
+//   .sync()
+//   .then(() => {
+//     console.log(' DB 연결 성공');
+//   })
+//   .catch((err) => {
+//     console.log('연결 실패');
+//     console.log(err);
+//   });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
