@@ -3,10 +3,10 @@ const { Users } = require('../../models');
 const postUser = (req, res) => {
   // Find or create the game in the games table
   // Register the score along with the given user_id using JWT token
-  const { userId, password, nickname } = req.body;
+  const { user_id, password, nickname } = req.body;
 
   Users.findOrCreate({
-    where: { userId },
+    where: { user_id },
     defaults: {
       password,
       nickname,

@@ -1,25 +1,17 @@
 'use strict';
-const Sequelize = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-  const Chat = sequelize.define('Chat', {
-    user_id: {
-      type: DataTypes.STRING,
-      allowNull: false,
+  const Chat = sequelize.define(
+    'Chat',
+    {
+      userChat: DataTypes.STRING,
+      chattingRoomId: DataTypes.INTEGER,
+      userId: DataTypes.INTEGER,
     },
-    userChat: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    chattingRoom_id: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  });
-  // eslint-disable-next-line
-  Chat.associate = (models) => {
-    Chat.belongsTo(models.ChattingRoom);
-    Chat.belongsTo(models.Users);
+    {}
+  );
+  Chat.associate = function (models) {
+    Chat.belongsTo(models.ChattingRoom, { foreignKey: 'chattingRoomId' });
+    Chat.belongsTo(models.Users, { foreignKey: 'userId' });
   };
   return Chat;
 };

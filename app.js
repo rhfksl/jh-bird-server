@@ -7,10 +7,12 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var chatRouter = require('./routes/chat');
+var chattingRoomsRouter = require('./routes/chattingRooms');
+var friendListsRouter = require('./routes/friendLists');
 var app = express();
 
-const { Chat } = require('./models');
-const { getChatMessages, postChatMessage } = require('./controllers/chatController/chatController');
+// const { Chat } = require('./models');
+const { getChatMessages, postChatMessage } = require('./socketIO/messages');
 const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./socketIO/users');
 app.io = require('socket.io')();
 
@@ -26,7 +28,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/chat', chatRouter);
+app.use('/friendLists', friendListsRouter);
+app.use('/chattingRooms', chattingRoomsRouter);
+app.use('/chats', chatRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -45,7 +49,7 @@ app.use(function (err, req, res, next) {
 });
 
 app.io.on('connection', async function (socket) {
-  console.log('연결되었습니다');
+  // console.log('연결되었습니다');
   // console.log(
   //   socket.on('firstConnection', (req) => {
   //     // console.log('첫 입장', req);
@@ -104,3 +108,8 @@ app.io.on('connection', async function (socket) {
 });
 
 module.exports = app;
+
+// npx sequelize model:create --name Users --attributes "user_id:string, password:string, nickname:string"
+// npx sequelize model:create --name FriendList --attributes "userId:integer, friendId:integer"
+// npx sequelize model:create --name ChattingRoom --attributes "roomname:string, userId:integer"
+// npx sequelize model:create --name Chat --attributes "userChat:string, chattingRoomId:integer, userId:integer"

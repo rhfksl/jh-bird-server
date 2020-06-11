@@ -1,25 +1,16 @@
 'use strict';
-
-const Sequelize = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
   const FriendList = sequelize.define(
     'FriendList',
     {
-      user_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      friend_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+      userId: DataTypes.INTEGER,
+      friendId: DataTypes.INTEGER,
     },
     {}
   );
-  // eslint-disable-next-line
-  FriendList.associate = (models) => {
-    FriendList.belongsTo(models.Users);
+  FriendList.associate = function (models) {
+    FriendList.belongsTo(models.Users, { foreignKey: 'playerId' });
+    FriendList.belongsTo(models.Users, { foreignKey: 'friendId' });
   };
   return FriendList;
 };

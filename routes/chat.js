@@ -1,12 +1,12 @@
 var express = require('express');
 var router = express.Router();
 const {
-  getChatMessages,
+  getAllChattingRoomMessages,
   postChatMessage,
 } = require('../controllers/chatController/chatController');
-// console.log(require('../controllers/userController/userController'));
+
 /* GET users listing. */
-router.get('/', getChatMessages);
+router.post('/getMessages', getAllChattingRoomMessages);
 router.post('/', postChatMessage);
 
 module.exports = router;

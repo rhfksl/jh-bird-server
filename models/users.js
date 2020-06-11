@@ -1,28 +1,18 @@
 'use strict';
-
-const Sequelize = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-  const Users = sequelize.define('Users', {
-    userId: {
-      type: DataTypes.STRING,
-      allowNull: false,
+  const Users = sequelize.define(
+    'Users',
+    {
+      user_id: DataTypes.STRING,
+      password: DataTypes.STRING,
+      nickname: DataTypes.STRING,
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    nickname: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  });
-  // eslint-disable-next-line
-  Users.associate = (models) => {
-    Users.hasMany(models.ChattingRoom, { foreignKey: 'user_id' });
-    Users.hasOne(models.FriendList, { foreignKey: 'user_id' });
-    Users.hasOne(models.FriendList, { foreignKey: 'friend_id' });
-    Users.hasMany(models.Chat, { foreignKey: 'user_id' });
+    {}
+  );
+  Users.associate = function (models) {
+    Users.hasMany(models.ChattingRoom, { onDelete: 'cascade' });
+    Users.hasMany(models.FriendList, { onDelete: 'cascade' });
+    Users.hasMany(models.Chat, { onDelete: 'cascade' });
   };
   return Users;
 };
