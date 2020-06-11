@@ -8,14 +8,24 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      user_id: {
-        type: Sequelize.STRING,
-      },
       userChat: {
         type: Sequelize.STRING,
       },
-      chattingRoom_id: {
-        type: Sequelize.STRING,
+      chattingRoomId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'ChattingRooms',
+          key: 'id',
+        },
+        onDelete: 'cascade',
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onDelete: 'cascade',
       },
       createdAt: {
         allowNull: false,
