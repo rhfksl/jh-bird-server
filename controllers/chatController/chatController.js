@@ -21,6 +21,6 @@ const postChatMessage = async (req, res) => {
     .then((_) => res.sendStatus(200))
     .catch((err) => err);
 };
-let modules = { postChatMessage, getAllChattingRoomMessages };
+const modules = { postChatMessage, getAllChattingRoomMessages };
 
 module.exports = modules;

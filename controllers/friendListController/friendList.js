@@ -14,7 +14,7 @@ const getFriendLists = async (req, res) => {
 
   const myPk = await getPk(nickname);
 
-  await FriendList.findAll({
+  return await FriendList.findAll({
     where: { userId: myPk },
     attributes: ['userId', 'friendId'],
     include: [
