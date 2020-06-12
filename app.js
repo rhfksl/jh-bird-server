@@ -1,15 +1,16 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const cors = require('cors');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var chatRouter = require('./routes/chat');
-var chattingRoomsRouter = require('./routes/chattingRooms');
-var friendListsRouter = require('./routes/friendLists');
-var app = express();
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const chatRouter = require('./routes/chat');
+const chattingRoomsRouter = require('./routes/chattingRooms');
+const friendListsRouter = require('./routes/friendLists');
+const app = express();
 
 // const { Chat } = require('./models');
 const { getChatMessages, postChatMessage } = require('./socketIO/messages');
@@ -25,6 +26,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// cors
+var whitelist = ['http://localhost:19006'];
+app.use(
+  cors({
+    origin(origin, callback) {
+      // allow requests with no origin
+      if (!origin) return callback(null, true);
+      if (whitelist.indexOf(origin) === -1) {
+        const message =
+          "The CORS policy for this origin doesn't " + 'allow access from the particular origin.';
+        return callback(new Error(message), false);
+      }
+      return callback(null, true);
+    },
+    credentials: true,
+  })
+);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
