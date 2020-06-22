@@ -44,6 +44,13 @@ app.use(
     credentials: true,
   })
 );
+// app.use(
+//   cors({
+//     origin: ['http://localhost:19006'],
+//     methods: ['GET', 'POST', 'OPTIONS'],
+//     credentials: true,
+//   })
+// );
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -76,53 +83,43 @@ app.io.on('connection', async function (socket) {
   //   })
   // );
 
-  socket.on('joinRoom', async ({ user_id, chattingRoom_id }) => {
-    console.log('room에 조인합니닷', user_id, chattingRoom_id);
-    const user = userJoin(socket.id, user_id, chattingRoom_id);
+  socket.on('joinRoom', async ({ user_id, nickname, chattingRoomId }) => {
+    console.log('room에 조인합니닷', nickname, chattingRoomId);
+    const user = userJoin(socket.id, nickname, chattingRoomId);
 
-    socket.join(user.chattingRoom_id);
+    socket.join(user.chattingRoomId);
 
     // 기존에 있는 채팅 정보를 모두 가져와서 보내는 부분
-    let firstMsg = await getChatMessages();
+    // let firstMsg = await getChatMessages(chattingRoomId);
 
     // Welcome current user
     // socket.emit('message', 'Welcome to ChatCord!');
 
     // Broadcast when a user connects
-    app.io.to(user.chattingRoom_id).emit('message', firstMsg);
+    // app.io.to(user.chattingRoomId).emit('firstMsg', firstMsg);
 
     // Send users and room info
-    app.io.to(user.chattingRoom_id).emit('roomUsers', {
-      chattingRoom_id: user.chattingRoom_id,
-      user_id: getRoomUsers(user.chattingRoom_id),
-    });
+    // app.io.to(user.chattingRoomId).emit('roomUsers', {
+    //   chattingRoomId: user.chattingRoomId,
+    //   nickname: getRoomUsers(user.chattingRoomId),
+    // });
 
     // 클라이언트에서 메세지를 보내면 db에 저장 후 다시 보내준다.
-    socket.on('message', function (msg) {
+    socket.on('message', async function (msg) {
       const user = getCurrentUser(socket.id);
-      app.io.to(user.chattingRoom_id).emit('message', [msg]);
-      postChatMessage(msg);
+      console.log('잘 받나요', msg);
+      let post = await postChatMessage(msg);
+      // add nickname to response
+      post.nickname = msg.nickname;
+      app.io.to(user.chattingRoomId).emit('message', post);
+      console.log('post', post);
     });
-  });
 
-  // Runs when client disconnects
-  socket.on('disconnect', () => {
-    const user = userLeave(socket.id);
-    console.log('나갑니닷', user);
-
-    if (user) {
-      app.io.to(user.chattingRoom_id).emit(
-        'message',
-        // formatMessage(botName, `${user.user_id} has left the chat`)
-        'left the chat'
-      );
-
-      // Send users and room info
-      // app.io.to(user.chattingRoom_id).emit('roomUsers', {
-      //   chattingRoom_id: user.chattingRoom_id,
-      //   users: getRoomUsers(user.chattingRoom_id),
-      // });
-    }
+    // Runs when client disconnects
+    socket.on('disconnect', () => {
+      const user = userLeave(socket.id);
+      console.log('나갑니닷', user);
+    });
   });
 });
 
