@@ -20,13 +20,17 @@ const getUserData = async (req, res) => {
 
   const userDataObj = {};
 
-  // get primaryKey
-  const myPk = await Users.findOne({
+  // get user infomation
+  const userInfo = await Users.findOne({
     where: {
       user_id: user_id,
     },
-    attributes: ['id'],
-  }).then((result) => result.dataValues.id);
+    attributes: ['id', 'user_id', 'nickname'],
+  }).then((result) => result.dataValues);
+
+  userDataObj.user = userInfo;
+
+  const myPk = userInfo.id;
 
   // get All FriendLists using primaryKey
   const friendLists = await FriendList.findAll({
@@ -65,33 +69,46 @@ const getUserData = async (req, res) => {
     allChatRooms[i].messages = temp;
   }
 
+  // translate all messages Array to object
+  const messagesObj = {};
+  allChatRooms.forEach((room) => {
+    messagesObj[room.chattingRoomId] = {};
+    messagesObj[room.chattingRoomId].messages = room.messages;
+    messagesObj[room.chattingRoomId].createdAt = room.createdAt;
+    messagesObj[room.chattingRoomId].roomname = room.roomname;
+  });
+
   // insert chattings in result object
-  userDataObj.allChatRooms = allChatRooms;
+  userDataObj.allChatRooms = messagesObj;
 
   res.status(200).json(userDataObj);
 };
 
-const postUser = (req, res) => {
+const postUser = async (req, res) => {
   const { user_id, password, nickname } = req.body;
 
-  Users.findOrCreate({
-    where: { user_id },
-    defaults: {
-      password,
-      nickname,
-    },
-  })
-    // eslint-disable-next-line
-    .then(([result, created]) => {
-      if (!created) {
-        res.sendStatus(409);
-      } else {
-        res.sendStatus(201);
-      }
+  let isUsers = await Users.findOne({ where: { user_id } })
+    .then((result) => result)
+    .catch((e) => res.json(e));
+
+  if (isUsers) {
+    res.json({ body: '유저가 이미 존재합니다' });
+    return;
+  }
+
+  let isNickname = await Users.findOne({ where: { nickname } })
+    .then((result) => result)
+    .catch((e) => res.json(e));
+
+  if (isNickname) {
+    res.json('닉네임이 이미 존재합니다');
+    return;
+  }
+  await Users.create({ user_id, nickname, password })
+    .then((_) => {
+      res.json({ body: 'ok' });
     })
-    .catch(() => {
-      res.sendStatus(409);
-    });
+    .catch((err) => err);
 };
 
 const modules = { getUserData, postUser };

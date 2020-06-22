@@ -1,22 +1,22 @@
-const { Chat } = require('../models');
+const { Chat, Users } = require('../models');
 
-const getChatMessages = async (req, res) => {
-  let result = await Chat.findAll({
-    where: { user_id: '고라니' },
-    attributes: ['user_id', 'userChat', 'chattingRoom_id'],
-  }).then((messages) => {
-    return messages;
-  });
-  result = result.map((msg) => msg.dataValues);
-  return result;
+const getChatMessages = async (chattingRoomId) => {
+  return await Chat.findAll({
+    where: { chattingRoomId: chattingRoomId },
+    attributes: ['id', 'userId', 'userChat', 'createdAt'],
+    include: [{ model: Users, attributes: ['nickname'] }],
+  }).then((chats) => chats.map((chat) => chat.dataValues));
 };
 
-const postChatMessage = async (req, res) => {
-  let result = await Chat.create(req);
-  if (result) {
-    // res.send('done');
-  }
-  return;
+const postChatMessage = (message) => {
+  const { chattingRoomId, userId, userChat } = message;
+  return Chat.create({
+    userId: userId,
+    chattingRoomId: chattingRoomId,
+    userChat: userChat,
+  })
+    .then((result) => result.dataValues)
+    .catch((err) => err);
 };
 let modules = { postChatMessage, getChatMessages };
 
