@@ -101,7 +101,7 @@ const postUser = async (req, res) => {
     .catch((e) => res.json(e));
 
   if (isNickname) {
-    res.json('닉네임이 이미 존재합니다');
+    res.json({ body: '닉네임이 이미 존재합니다' });
     return;
   }
   await Users.create({ user_id, nickname, password })
