@@ -6,7 +6,13 @@ const getPk = (nickname) => {
       nickname: nickname,
     },
     attributes: ['id'],
-  }).then((result) => result.dataValues.id);
+  }).then((result) => {
+    if (result === null) {
+      return null;
+    } else {
+      return result.dataValues.id;
+    }
+  });
 };
 
 const getFriendLists = async (req, res) => {
@@ -36,11 +42,17 @@ const postFriendLists = async (req, res) => {
 
   const myPk = await getPk(myNickname);
   const friendPk = await getPk(friendNickname);
-
-  let result = await FriendList.create({ userId: myPk, friendId: friendPk }).then(
-    (result) => result.dataValues
-  );
-  res.status(200).json(result);
+  if (friendPk === null) {
+    res.json({ body: 'not exist' });
+  } else {
+    await FriendList.create({ userId: myPk, friendId: friendPk });
+    res.json({
+      body: {
+        id: friendPk,
+        nickname: friendNickname,
+      },
+    });
+  }
 };
 
 module.exports = { getFriendLists, postFriendLists };

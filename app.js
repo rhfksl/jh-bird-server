@@ -88,31 +88,20 @@ app.io.on('connection', async function (socket) {
     const user = userJoin(socket.id, nickname, chattingRoomId);
 
     socket.join(user.chattingRoomId);
-
-    // 기존에 있는 채팅 정보를 모두 가져와서 보내는 부분
-    // let firstMsg = await getChatMessages(chattingRoomId);
-
-    // Welcome current user
-    // socket.emit('message', 'Welcome to ChatCord!');
-
-    // Broadcast when a user connects
-    // app.io.to(user.chattingRoomId).emit('firstMsg', firstMsg);
-
-    // Send users and room info
-    // app.io.to(user.chattingRoomId).emit('roomUsers', {
-    //   chattingRoomId: user.chattingRoomId,
-    //   nickname: getRoomUsers(user.chattingRoomId),
-    // });
-
     // 클라이언트에서 메세지를 보내면 db에 저장 후 다시 보내준다.
     socket.on('message', async function (msg) {
       const user = getCurrentUser(socket.id);
       console.log('잘 받나요', msg);
-      let post = await postChatMessage(msg);
+      // let post = await postChatMessage(msg);
       // add nickname to response
-      post.nickname = msg.nickname;
-      app.io.to(user.chattingRoomId).emit('message', post);
-      console.log('post', post);
+      // post.nickname = msg.nickname;
+      app.io.to(user.chattingRoomId).emit('message', msg);
+      // console.log('post', post);
+
+      // if (nickname === '고라니주니어') {
+      //   console.log('did you come?');
+      //   socket.emit('message', '이거나먹어라 새 ㅡ꺄');
+      // }
     });
 
     // Runs when client disconnects

@@ -6,6 +6,6 @@ const {
 } = require('../controllers/friendListController/friendList');
 
 router.post('/getLists', getFriendLists);
-router.post('/', postFriendLists);
+router.post('/addFriend', postFriendLists);
 
 module.exports = router;
