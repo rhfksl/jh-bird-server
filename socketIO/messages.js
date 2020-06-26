@@ -9,14 +9,20 @@ const getChatMessages = async (chattingRoomId) => {
 };
 
 const postChatMessage = (message) => {
-  const { chattingRoomId, userId, userChat } = message;
-  return Chat.create({
-    userId: userId,
-    chattingRoomId: chattingRoomId,
-    userChat: userChat,
-  })
-    .then((result) => result.dataValues)
-    .catch((err) => err);
+  // const { chattingRoomId, userId, userChat } = message;
+  return (
+    Chat.create({
+      userId: message.user._id,
+      chattingRoomId: message.chattingRoomId,
+      userChat: message.text,
+    })
+      .then((_) => {
+        // console.log('fine????', _);
+        return message;
+      })
+      // .then((result) => result.dataValues)
+      .catch((err) => err)
+  );
 };
 let modules = { postChatMessage, getChatMessages };
 
