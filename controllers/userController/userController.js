@@ -1,5 +1,7 @@
 const { Users, FriendList, ChattingRoom, Chat } = require('../../models');
 const { getFriendLists } = require('../friendListController/friendList');
+const sequelize = require('sequelize');
+const Op = sequelize.Op;
 
 const getAllChattingRoomMessages = async (chattingRoomId) => {
   let result = await Chat.findAll({
@@ -7,20 +9,6 @@ const getAllChattingRoomMessages = async (chattingRoomId) => {
     attributes: ['id', 'userId', 'userChat', 'createdAt'],
     include: [{ model: Users, attributes: ['nickname'] }],
   });
-
-  // 이게 필요
-  // {
-  //   _id: 1,
-  //   text: 'what?',
-  //   createdAt: new Date(),
-  //   user: {
-  //     _id: 2,
-  //     name: 'React Native',
-  //     avatar: 'https://placeimg.com/140/140/any',
-  //   },
-  // },
-
-  // console.log('check', result);
 
   return result.map((val) => {
     // format message for using react-native-gifted-chat
@@ -38,6 +26,7 @@ const getAllChattingRoomMessages = async (chattingRoomId) => {
 };
 
 const getUserData = async (req, res) => {
+  console.log('this is req', req);
   const { user_id } = req.body;
 
   const userDataObj = {};
@@ -47,7 +36,7 @@ const getUserData = async (req, res) => {
     where: {
       user_id: user_id,
     },
-    attributes: ['id', 'user_id', 'nickname'],
+    attributes: ['id', 'user_id', 'nickname', 'img'],
   }).then((result) => result.dataValues);
 
   userDataObj.user = userInfo;
@@ -61,7 +50,7 @@ const getUserData = async (req, res) => {
     include: [
       {
         model: Users,
-        attributes: ['id', 'nickname'],
+        attributes: ['id', 'nickname', 'img'],
       },
     ],
   })
@@ -75,8 +64,10 @@ const getUserData = async (req, res) => {
 
   // get all chattingRooms
   const allChatRooms = await ChattingRoom.findAll({
-    where: { userId: myPk },
-    attributes: [['id', 'chattingRoomId'], 'roomname', 'createdAt'],
+    where: {
+      [Op.or]: [{ userId: myPk }, { userId2: myPk }],
+    },
+    attributes: [['id', 'chattingRoomId'], 'roomname', 'userId', 'userId2', 'createdAt'],
   })
     .then((result) => {
       return result.map((val) => val.dataValues);
@@ -99,9 +90,8 @@ const getUserData = async (req, res) => {
     messagesObj[room.chattingRoomId] = {};
     messagesObj[room.chattingRoomId].createdAt = room.createdAt;
     messagesObj[room.chattingRoomId].roomname = room.roomname;
-    // room.messages = room.messages.map(msg=>{
-
-    // })
+    messagesObj[room.chattingRoomId].userId = room.userId;
+    messagesObj[room.chattingRoomId].userId2 = room.userId2;
     messagesObj[room.chattingRoomId].messages = room.messages;
   });
 

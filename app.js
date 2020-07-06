@@ -28,7 +28,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // cors
-var whitelist = ['http://localhost:19006'];
+var whitelist = [
+  'http://localhost:19006',
+  'http://127.0.0.1:19001',
+  'http://localhost:19000',
+  'http://172.30.1.47:19006',
+  'http://192.168.1.86:19001',
+  'http://192.168.1.86:19000',
+];
 app.use(
   cors({
     origin(origin, callback) {
