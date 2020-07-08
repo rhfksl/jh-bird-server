@@ -8,6 +8,7 @@ const getAllChattingRoomMessages = async (chattingRoomId) => {
     where: { chattingRoomId: chattingRoomId },
     attributes: ['id', 'userId', 'userChat', 'createdAt'],
     include: [{ model: Users, attributes: ['nickname'] }],
+    order: [['id', 'ASC']],
   });
 
   return result.map((val) => {
