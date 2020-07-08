@@ -4,7 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     'ChattingRoom',
     {
       roomname: DataTypes.STRING,
+      roomname2: DataTypes.STRING,
       userId: DataTypes.INTEGER,
+      userId2: DataTypes.INTEGER,
     },
     {}
   );

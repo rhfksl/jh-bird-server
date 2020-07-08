@@ -9,6 +9,33 @@ const getPk = (nickname) => {
   }).then((result) => result.dataValues.id);
 };
 
+const isChattingRoomExist = async (req, res) => {
+  let { usersInfo } = req.body;
+  usersInfo.sort((a, b) => a.id - b.id);
+
+  let checkChattingRoom = await ChattingRoom.findOne({
+    where: {
+      userId: usersInfo[0].id,
+      userId2: usersInfo[1].id,
+    },
+  }).then((res) => res);
+
+  let chattingRoomId;
+  // create chattingRoom if it doesn't exist
+  if (checkChattingRoom === null) {
+    await ChattingRoom.create({
+      userId: usersInfo[0].id,
+      userId2: usersInfo[1].id,
+      roomname: `${usersInfo[0].nickname} 대화방`,
+      roomname2: `${usersInfo[1].nickname} 대화방`,
+    }).then((res) => (chattingRoomId = res.dataValues.id));
+  } else {
+    chattingRoomId = checkChattingRoom.dataValues.id;
+  }
+
+  res.status(200).json(chattingRoomId);
+};
+
 const getChattingRoom = async (req, res) => {
   const { myNickname } = req.body;
 
@@ -40,4 +67,4 @@ const postChattingRoom = async (req, res) => {
   res.status(200).json(result);
 };
 
-module.exports = { getChattingRoom, postChattingRoom };
+module.exports = { getChattingRoom, postChattingRoom, isChattingRoomExist };

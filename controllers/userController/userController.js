@@ -26,7 +26,6 @@ const getAllChattingRoomMessages = async (chattingRoomId) => {
 };
 
 const getUserData = async (req, res) => {
-  console.log('this is req', req);
   const { user_id } = req.body;
 
   const userDataObj = {};
@@ -67,7 +66,14 @@ const getUserData = async (req, res) => {
     where: {
       [Op.or]: [{ userId: myPk }, { userId2: myPk }],
     },
-    attributes: [['id', 'chattingRoomId'], 'roomname', 'userId', 'userId2', 'createdAt'],
+    attributes: [
+      ['id', 'chattingRoomId'],
+      'roomname',
+      'roomname2',
+      'userId',
+      'userId2',
+      'createdAt',
+    ],
   })
     .then((result) => {
       return result.map((val) => val.dataValues);
@@ -82,14 +88,13 @@ const getUserData = async (req, res) => {
     allChatRooms[i].messages = temp;
   }
 
-  // console.log('check', allChatRooms);
-
   // translate all messages Array to object
   const messagesObj = {};
   allChatRooms.forEach((room) => {
     messagesObj[room.chattingRoomId] = {};
     messagesObj[room.chattingRoomId].createdAt = room.createdAt;
     messagesObj[room.chattingRoomId].roomname = room.roomname;
+    messagesObj[room.chattingRoomId].roomname2 = room.roomname2;
     messagesObj[room.chattingRoomId].userId = room.userId;
     messagesObj[room.chattingRoomId].userId2 = room.userId2;
     messagesObj[room.chattingRoomId].messages = room.messages;

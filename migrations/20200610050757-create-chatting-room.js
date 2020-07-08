@@ -19,6 +19,14 @@ module.exports = {
         },
         onDelete: 'cascade',
       },
+      userId2: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onDelete: 'cascade',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

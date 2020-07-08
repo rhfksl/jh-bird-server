@@ -82,33 +82,18 @@ app.use(function (err, req, res, next) {
 });
 
 app.io.on('connection', async function (socket) {
-  // console.log('연결되었습니다');
-  // console.log(
-  //   socket.on('firstConnection', (req) => {
-  //     // console.log('첫 입장', req);
-  //     socket.emit('firstConnection', '옛다 먹어라');
-  //   })
-  // );
+  socket.on('joinRoom', async ({ user_id, nickname, friendId }) => {
+    console.log('room에 조인합니닷', nickname, friendId);
+    const user = userJoin(socket.id, nickname, friendId);
+    socket.join(user.friendId);
 
-  socket.on('joinRoom', async ({ user_id, nickname, chattingRoomId }) => {
-    console.log('room에 조인합니닷', nickname, chattingRoomId);
-    const user = userJoin(socket.id, nickname, chattingRoomId);
-
-    socket.join(user.chattingRoomId);
     // 클라이언트에서 메세지를 보내면 db에 저장 후 다시 보내준다.
     socket.on('message', async function (msg) {
       const user = getCurrentUser(socket.id);
       console.log('잘 받나요', msg);
-      // let post = await postChatMessage(msg);
-      // add nickname to response
-      // post.nickname = msg.nickname;
-      app.io.to(user.chattingRoomId).emit('message', msg);
-      // console.log('post', post);
-
-      // if (nickname === '고라니주니어') {
-      //   console.log('did you come?');
-      //   socket.emit('message', '이거나먹어라 새 ㅡ꺄');
-      // }
+      let post = await postChatMessage(msg);
+      console.log('과연', post);
+      app.io.to(user.friendId).emit('message', post);
     });
 
     // Runs when client disconnects
