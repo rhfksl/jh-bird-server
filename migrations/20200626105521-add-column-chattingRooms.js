@@ -13,7 +13,7 @@ module.exports = {
             key: 'id',
           },
           onUpdate: 'CASCADE',
-          onDelete: 'SET NULL',
+          onDelete: 'CASCADE',
         }
       )
       .then(() =>
@@ -22,6 +22,7 @@ module.exports = {
           'img', // name of the key we're adding
           {
             type: Sequelize.STRING,
+            defaultValue: 'https://placeimg.com/140/140/any',
           }
         )
       );

@@ -2,6 +2,7 @@
   "development": {
     "username": "root",
     "database": "jh_bird_dev",
+    "password": "root",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "operatorsAliases": false
