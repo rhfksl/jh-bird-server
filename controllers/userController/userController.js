@@ -115,7 +115,7 @@ const signUpUser = async (req, res) => {
     .catch((e) => res.json(e));
 
   if (isUsers) {
-    res.json({ body: '유저가 이미 존재합니다' });
+    res.json({ body: 'id가 이미 존재합니다' });
     return;
   }
 
@@ -128,8 +128,9 @@ const signUpUser = async (req, res) => {
     return;
   }
   await Users.create({ user_id, nickname, password })
-    .then((_) => {
-      res.json({ user_id, nickname });
+    .then((result) => {
+      console.log({ id: result.dataValues.id, user_id, nickname });
+      res.json({ id: result.dataValues.id, user_id, nickname });
     })
     .catch((err) => err);
 };
@@ -145,7 +146,7 @@ const login = async (req, res) => {
       }
 
       if (result.dataValues.password === password) {
-        res.json({ user_id, nickname: result.dataValues.nickname });
+        res.json({ user_id, id: result.dataValues.id, nickname: result.dataValues.nickname });
         return;
       } else {
         res.json({ body: '비밀번호가 맞지 않습니다.' });

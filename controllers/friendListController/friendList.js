@@ -38,21 +38,23 @@ const getFriendLists = async (req, res) => {
 };
 
 const postFriendLists = async (req, res) => {
-  const { myNickname, friendNickname } = req.body;
-
-  const myPk = await getPk(myNickname);
-  const friendPk = await getPk(friendNickname);
-  if (friendPk === null) {
-    res.json({ body: 'not exist' });
-  } else {
-    await FriendList.create({ userId: myPk, friendId: friendPk });
-    res.json({
-      body: {
-        id: friendPk,
-        nickname: friendNickname,
-      },
-    });
+  let { userId, friendId, friendNickname } = req.body;
+  if (!friendId) {
+    friendId = await getPk(friendNickname);
   }
+  if (!friendId) {
+    res.json({ body: 'not exist' });
+    return;
+  }
+
+  FriendList.create({ userId: userId, friendId: friendId })
+    .then((_) =>
+      Users.findOne({
+        where: { id: friendId },
+        attributes: ['id', 'nickname', 'img'],
+      }).then((result) => res.status(200).json(result))
+    )
+    .catch((e) => console.log(e));
 };
 
 module.exports = { getFriendLists, postFriendLists };
