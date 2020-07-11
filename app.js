@@ -12,9 +12,9 @@ const chattingRoomsRouter = require('./routes/chattingRooms');
 const friendListsRouter = require('./routes/friendLists');
 const app = express();
 
-// const { Chat } = require('./models');
 const { getChatMessages, postChatMessage } = require('./socketIO/messages');
-const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./socketIO/users');
+const { userJoin, userLeave } = require('./socketIO/users');
+
 app.io = require('socket.io')();
 
 // view engine setup
@@ -85,15 +85,17 @@ app.io.on('connection', async function (socket) {
   socket.on('joinRoom', async ({ user_id, nickname, friendId }) => {
     console.log('room에 조인합니닷', nickname, friendId);
     const user = userJoin(socket.id, nickname, friendId);
-    socket.join(user.friendId);
+    socket.join(friendId);
 
     // 클라이언트에서 메세지를 보내면 db에 저장 후 다시 보내준다.
     socket.on('message', async function (msg) {
-      const user = getCurrentUser(socket.id);
-      console.log('잘 받나요', msg);
+      // const user = getCurrentUser(socket.id);
+
       let post = await postChatMessage(msg);
-      console.log('과연', post);
-      app.io.to(user.friendId).emit('message', post);
+      console.log('check', post, user, post.friendId);
+
+      app.io.to(post.user._id).emit('message', post);
+      app.io.to(post.friendId).emit('message', post);
     });
 
     // Runs when client disconnects
