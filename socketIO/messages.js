@@ -2,6 +2,17 @@ const { Chat, Users, ChattingRoom } = require('../models');
 const sequelize = require('sequelize');
 const Op = sequelize.Op;
 
+// helper
+const createwMessage = (userId, chattingRoomId, text) => {
+  return Chat.create({
+    userId: userId,
+    chattingRoomId: chattingRoomId,
+    userChat: text,
+  })
+    .then((_) => 'success')
+    .catch((err) => err);
+};
+
 const getChatMessages = async (chattingRoomId) => {
   return await Chat.findAll({
     where: { chattingRoomId: chattingRoomId },
@@ -26,31 +37,26 @@ const postChatMessage = async (message) => {
     },
   }).then((res) => res);
 
-  let chattingRoomId;
-  // create chattingRoom if it doesn't exist
+  // create chattingRoom in DB if it doesn't exist
   if (isChattingRoomExist === null) {
-    await ChattingRoom.create({
+    isChattingRoomExist = await ChattingRoom.create({
       userId: usersInfo[0].id,
       userId2: usersInfo[1].id,
       roomname: `${usersInfo[0].nickname} 대화방`,
       roomname2: `${usersInfo[1].nickname} 대화방`,
-    }).then((res) => (chattingRoomId = res.dataValues.id));
-  } else {
-    chattingRoomId = isChattingRoomExist.dataValues.id;
+    }).then((res) => res);
   }
 
-  // post new message
-  return await Chat.create({
-    userId: user._id,
-    chattingRoomId: chattingRoomId,
-    userChat: text,
-  })
-    .then((_) => {
-      // add chattingRoomId in res
-      message.chattingRoomId = chattingRoomId;
-      return message;
-    })
-    .catch((err) => err);
+  let chattingRoomId = isChattingRoomExist.dataValues.id;
+  let isSuccess = await createwMessage(user._id, chattingRoomId, text);
+  if (isSuccess === 'success') {
+    // message.roomInfo = isChattingRoomExist.dataValues;
+    // message.chattingRoomId = chattingRoomId;
+    return { message, roomInfo: isChattingRoomExist.dataValues };
+  } else {
+    console.log('error', isSuccess);
+    return;
+  }
 };
 let modules = { postChatMessage, getChatMessages };
 

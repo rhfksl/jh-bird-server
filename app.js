@@ -92,10 +92,9 @@ app.io.on('connection', async function (socket) {
       // const user = getCurrentUser(socket.id);
 
       let post = await postChatMessage(msg);
-      console.log('check', post, user, post.friendId);
 
-      app.io.to(post.user._id).emit('message', post);
-      app.io.to(post.friendId).emit('message', post);
+      app.io.to(post.roomInfo.userId).emit('message', post);
+      app.io.to(post.roomInfo.userId2).emit('message', post);
     });
 
     // Runs when client disconnects
