@@ -92,13 +92,7 @@ const getUserData = async (req, res) => {
   // translate all messages Array to object
   const messagesObj = {};
   allChatRooms.forEach((room) => {
-    messagesObj[room.chattingRoomId] = {};
-    messagesObj[room.chattingRoomId].createdAt = room.createdAt;
-    messagesObj[room.chattingRoomId].roomname = room.roomname;
-    messagesObj[room.chattingRoomId].roomname2 = room.roomname2;
-    messagesObj[room.chattingRoomId].userId = room.userId;
-    messagesObj[room.chattingRoomId].userId2 = room.userId2;
-    messagesObj[room.chattingRoomId].messages = room.messages;
+    messagesObj[room.chattingRoomId] = Object.assign({}, room);
   });
 
   // insert chattings in result object
@@ -129,7 +123,6 @@ const signUpUser = async (req, res) => {
   }
   await Users.create({ user_id, nickname, password })
     .then((result) => {
-      console.log({ id: result.dataValues.id, user_id, nickname });
       res.json({ id: result.dataValues.id, user_id, nickname });
     })
     .catch((err) => err);
