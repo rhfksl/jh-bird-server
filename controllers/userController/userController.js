@@ -92,7 +92,14 @@ const getUserData = async (req, res) => {
   // translate all messages Array to object
   const messagesObj = {};
   allChatRooms.forEach((room) => {
-    messagesObj[room.chattingRoomId] = Object.assign({}, room);
+    messagesObj[room.chattingRoomId] = {};
+    messagesObj[room.chattingRoomId].roomInfo = {};
+    messagesObj[room.chattingRoomId].roomInfo.createdAt = room.createdAt;
+    messagesObj[room.chattingRoomId].roomInfo.roomname = room.roomname;
+    messagesObj[room.chattingRoomId].roomInfo.roomname2 = room.roomname2;
+    messagesObj[room.chattingRoomId].roomInfo.userId = room.userId;
+    messagesObj[room.chattingRoomId].roomInfo.userId2 = room.userId2;
+    messagesObj[room.chattingRoomId].messages = room.messages;
   });
 
   // insert chattings in result object
@@ -129,6 +136,7 @@ const signUpUser = async (req, res) => {
 };
 
 const login = async (req, res) => {
+  console.log('req', req);
   const { user_id, password } = req.body;
 
   Users.findOne({ where: { user_id } })
