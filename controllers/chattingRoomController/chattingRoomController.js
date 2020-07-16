@@ -23,17 +23,14 @@ const isChattingRoomExist = async (req, res) => {
   let chattingRoomId;
   // create chattingRoom if it doesn't exist
   if (checkChattingRoom === null) {
-    await ChattingRoom.create({
+    checkChattingRoom = await ChattingRoom.create({
       userId: usersInfo[0].id,
       userId2: usersInfo[1].id,
       roomname: `${usersInfo[0].nickname} 대화방`,
       roomname2: `${usersInfo[1].nickname} 대화방`,
-    }).then((res) => (chattingRoomId = res.dataValues.id));
-  } else {
-    chattingRoomId = checkChattingRoom.dataValues.id;
+    }).then((res) => res);
   }
-
-  res.status(200).json(chattingRoomId);
+  res.status(200).json(checkChattingRoom.dataValues);
 };
 
 const getChattingRoom = async (req, res) => {

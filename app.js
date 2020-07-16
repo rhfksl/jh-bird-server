@@ -32,6 +32,7 @@ var whitelist = [
   'http://localhost:19006',
   'http://127.0.0.1:19001',
   'http://localhost:19000',
+  'https://localhost',
   'http://172.30.1.47:19006',
   'http://192.168.1.86:19001',
   'http://192.168.1.86:19000',
