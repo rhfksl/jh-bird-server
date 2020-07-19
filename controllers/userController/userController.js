@@ -1,5 +1,5 @@
 const { Users, FriendList, ChattingRoom, Chat } = require('../../models');
-const { getFriendLists } = require('../friendListController/friendList');
+const { encrypto } = require('../../crypto');
 const sequelize = require('sequelize');
 const Op = sequelize.Op;
 
@@ -111,6 +111,9 @@ const getUserData = async (req, res) => {
 const signUpUser = async (req, res) => {
   const { user_id, password, nickname } = req.body;
 
+  // encrypto password
+  let hashing = await encrypto(password).then((hash) => hash);
+
   let isUsers = await Users.findOne({ where: { user_id } })
     .then((result) => result)
     .catch((e) => res.json(e));
@@ -128,7 +131,7 @@ const signUpUser = async (req, res) => {
     res.json({ body: '닉네임이 이미 존재합니다' });
     return;
   }
-  await Users.create({ user_id, nickname, password })
+  await Users.create({ user_id, nickname, password: hashing })
     .then((result) => {
       res.json({ id: result.dataValues.id, user_id, nickname });
     })
@@ -138,6 +141,8 @@ const signUpUser = async (req, res) => {
 const login = async (req, res) => {
   const { user_id, password } = req.body;
 
+  let hashing = await encrypto(password).then((hash) => hash);
+
   Users.findOne({ where: { user_id } })
     .then((result) => {
       if (result === null) {
@@ -145,7 +150,7 @@ const login = async (req, res) => {
         return;
       }
 
-      if (result.dataValues.password === password) {
+      if (result.dataValues.password === hashing) {
         res.json({ user_id, id: result.dataValues.id, nickname: result.dataValues.nickname });
         return;
       } else {
