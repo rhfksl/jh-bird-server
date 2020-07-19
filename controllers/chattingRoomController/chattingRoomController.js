@@ -20,7 +20,6 @@ const isChattingRoomExist = async (req, res) => {
     },
   }).then((res) => res);
 
-  let chattingRoomId;
   // create chattingRoom if it doesn't exist
   if (checkChattingRoom === null) {
     checkChattingRoom = await ChattingRoom.create({

@@ -136,7 +136,6 @@ const signUpUser = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  console.log('req', req);
   const { user_id, password } = req.body;
 
   Users.findOne({ where: { user_id } })
