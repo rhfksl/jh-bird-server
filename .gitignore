@@ -3,5 +3,6 @@ config
 
 # macOS
 
+crypto.js
 password.json
 package-lock.json
